@@ -1,0 +1,10 @@
+{
+  "model": "anthropic/claude-sonnet-4",
+  "agent": {
+    "build": { "model": "anthropic/claude-sonnet-4", "mode": "primary" },
+    "plan": { "model": "anthropic/claude-haiku-4", "mode": "primary" },
+    "researcher/agent-a": { "mode": "subagent", "description": "Research agent A" },
+    "researcher/agent-b": { "mode": "subagent", "description": "Research agent B" },
+    "reviewer/agent-c": { "mode": "subagent", "description": "Review agent C" }
+  }
+}

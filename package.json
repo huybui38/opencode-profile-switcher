@@ -1,0 +1,43 @@
+{
+  "name": "opencode-profile-switcher",
+  "version": "0.1.0",
+  "description": "Switch OpenCode profiles with wildcard agent config expansion",
+  "type": "module",
+  "bin": {
+    "opencode-profile": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/cli.ts --format esm --dts --clean",
+    "dev": "tsup src/cli.ts --format esm --watch",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "minimatch": "^10.0.1",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.2",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.1"
+  },
+  "packageManager": "bun@1.2.12",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "opencode",
+    "profile",
+    "switcher",
+    "wildcard",
+    "agent",
+    "config"
+  ],
+  "license": "MIT"
+}
