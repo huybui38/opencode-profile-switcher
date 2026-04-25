@@ -15,15 +15,19 @@ export function mergeProfile(
     merged.small_model = profile.small_model;
   }
 
-  const mergedAgent: Record<string, AgentConfig> = {
-    ...(baseConfig.agent || {}),
-  };
-
-  for (const [name, config] of Object.entries(expanded.agent)) {
-    mergedAgent[name] = config;
+  const modelOnlyAgent = extractModelOnlyAgentConfig(expanded.agent);
+  if (Object.keys(modelOnlyAgent).length > 0) {
+    const mergedAgent: Record<string, AgentConfig> = {
+      ...(baseConfig.agent || {}),
+    };
+    for (const [name, config] of Object.entries(modelOnlyAgent)) {
+      mergedAgent[name] = {
+        ...(mergedAgent[name] || {}),
+        model: config.model,
+      };
+    }
+    merged.agent = mergedAgent;
   }
-
-  merged.agent = mergedAgent;
 
   return merged;
 }
@@ -41,9 +45,22 @@ export function extractProfileOverrides(
     overrides.small_model = profile.small_model;
   }
 
-  if (Object.keys(expanded.agent).length > 0) {
-    overrides.agent = expanded.agent;
+  const modelOnlyAgent = extractModelOnlyAgentConfig(expanded.agent);
+  if (Object.keys(modelOnlyAgent).length > 0) {
+    overrides.agent = modelOnlyAgent;
   }
 
   return overrides;
+}
+
+function extractModelOnlyAgentConfig(
+  agentConfigs: Record<string, AgentConfig>
+): Record<string, { model: string }> {
+  const out: Record<string, { model: string }> = {};
+  for (const [name, config] of Object.entries(agentConfigs)) {
+    if (typeof config.model === "string" && config.model.length > 0) {
+      out[name] = { model: config.model };
+    }
+  }
+  return out;
 }
