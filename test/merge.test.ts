@@ -59,6 +59,26 @@ describe("mergeProfile", () => {
     expect(result.agent?.["build"].model).toBe("anthropic/claude-opus-4.6");
   });
 
+  it("only patches agent model and keeps existing agent fields", () => {
+    const base: OpenCodeConfig = {
+      agent: {
+        build: { model: "anthropic/claude-sonnet-4", mode: "primary", temperature: 0.2 },
+      },
+    };
+    const profile: Profile = {};
+    const expanded: ExpandResult = {
+      agent: {
+        build: { model: "anthropic/claude-opus-4.6", temperature: 0.9, permission: { edit: "deny" } } as AgentConfig,
+      },
+    };
+
+    const result = mergeProfile(base, profile, expanded);
+    expect(result.agent?.["build"].model).toBe("anthropic/claude-opus-4.6");
+    expect(result.agent?.["build"].mode).toBe("primary");
+    expect(result.agent?.["build"].temperature).toBe(0.2);
+    expect(result.agent?.["build"].permission).toBeUndefined();
+  });
+
   it("preserves non-conflicting base config", () => {
     const base: OpenCodeConfig = {
       model: "anthropic/claude-sonnet-4",
@@ -93,6 +113,20 @@ describe("extractProfileOverrides", () => {
     const overrides = extractProfileOverrides(profile, expanded);
     expect(overrides.agent).toEqual(expanded.agent);
     expect(overrides.model).toBeUndefined();
+  });
+
+  it("extracts only agent model fields", () => {
+    const profile: Profile = {};
+    const expanded: ExpandResult = {
+      agent: {
+        "researcher/agent-a": { model: "anthropic/claude-opus-4.6", temperature: 0.4 },
+        "researcher/agent-b": { temperature: 0.1 },
+      },
+    };
+    const overrides = extractProfileOverrides(profile, expanded);
+    expect(overrides.agent).toEqual({
+      "researcher/agent-a": { model: "anthropic/claude-opus-4.6" },
+    });
   });
 
   it("extracts both model and agent overrides", () => {

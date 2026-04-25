@@ -120,6 +120,17 @@ export async function loadConfig(cwd: string): Promise<OpenCodeConfig> {
   return parseJsonc(content) as OpenCodeConfig;
 }
 
+export async function loadConfigAtDir(dir: string): Promise<OpenCodeConfig> {
+  for (const name of CONFIG_FILENAMES) {
+    const filePath = join(dir, name);
+    if (existsSync(filePath)) {
+      const content = await readFile(filePath, "utf-8");
+      return parseJsonc(content) as OpenCodeConfig;
+    }
+  }
+  return {};
+}
+
 export function getHomeConfigDir(): string {
   const platform = process.platform;
   if (platform === "win32") {
